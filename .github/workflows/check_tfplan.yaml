@@ -1,0 +1,30 @@
+name: Terraform Plan
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup Terraform
+      uses: actions/setup-terraform@v2
+      with:
+        version: 1.4.6
+    - name: Run Terraform Plan
+      run: |
+        terraform init
+        terraform plan -out=tfplan
+        terraform show -json tfplan > tfplan.json
+    - name: Run OPA
+      uses: openpolicyagent/opa-action@v1
+      with:
+        args: eval data.main.allow -f pretty -i tfplan.json -d .github/opa/example_policy.rego
+    - name: Check if any policy violations
+      run: |
+        if [ "${{ steps.opa.outputs }}" != "true" ]; then exit 1; fi
