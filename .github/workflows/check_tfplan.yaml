@@ -13,14 +13,17 @@ jobs:
 
     steps:
     - name: Checkout code
+      id: checkout-code
       uses: actions/checkout@v3
 
     - name: Setup Terraform
+      id: setup-terraform
       uses: hashicorp/setup-terraform@v2
       with:
         version: 1.4.6
 
     - name: Configure AWS credentials
+      id: configure-aws-credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -28,6 +31,7 @@ jobs:
         aws-region: ${{ env.AWS_REGION }}
 
     - name: Run Terraform Plan
+      id: run-terraform-plan
       run: |
         cd tf_code
         terraform init
@@ -35,14 +39,18 @@ jobs:
         terraform show -json tfplan > tfplan.json
 
     - name: Setup OPA
+      id: setup-opa
       uses: open-policy-agent/setup-opa@v2
       with:
         version: 0.42
 
     - name: Run OPA query
+      id: run-opa-query
       run: |
-        opa eval data.main.allow -f pretty -i tf_code/tfplan.json -d .github/opa/example_policy.rego
+        echo "OPA_OUTPUT=$(opa eval data.main.allow -f pretty -i tf_code/tfplan.json -d .github/opa/example_policy.rego)" >> $GITHUB_OUTPUT
 
-    - name: Check if any policy violations
+
+    - name: Check policy violations
+      id: check-policy-violations
       run: |
-        if [ "${{ steps.opa.outputs }}" != "true" ]; then exit 1; fi
+        if [ "${{ steps.run-opa-query.outputs.OPA_OUTPUT }}" != "true" ]; then exit 1; fi
