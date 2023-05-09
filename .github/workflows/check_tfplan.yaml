@@ -10,22 +10,28 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Setup Terraform
-      uses: actions/setup-terraform@v2
+      uses: hashicorp/setup-terraform@v2
       with:
         version: 1.4.6
+
     - name: Run Terraform Plan
       run: |
         cd tf_code
         terraform init
         terraform plan -out=tfplan
         terraform show -json tfplan > tfplan.json
-    - name: Run OPA
-      uses: openpolicyagent/opa-action@v1
+
+    - name: Setup OPA
+      uses: open-policy-agent/setup-opa@v2
       with:
-        args: eval data.main.allow -f pretty -i tfplan.json -d .github/opa/example_policy.rego
+        version: 0.42
+
+    - name: Run OPA query
+      run: opa eval data.main.allow -f pretty -i tfplan.json -d .github/opa/example_policy.rego
+
     - name: Check if any policy violations
       run: |
         if [ "${{ steps.opa.outputs }}" != "true" ]; then exit 1; fi
