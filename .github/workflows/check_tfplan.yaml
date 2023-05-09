@@ -40,7 +40,8 @@ jobs:
         version: 0.42
 
     - name: Run OPA query
-      run: opa eval data.main.allow -f pretty -i tfplan.json -d .github/opa/example_policy.rego
+      run: |
+        opa eval data.main.allow -f pretty -i tf_code/tfplan.json -d .github/opa/example_policy.rego
 
     - name: Check if any policy violations
       run: |
