@@ -4,6 +4,9 @@ on:
     branches:
       - main
 
+env:
+  AWS_REGION: us-east-1
+
 jobs:
   plan:
     runs-on: ubuntu-latest
