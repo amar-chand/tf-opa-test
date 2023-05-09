@@ -37,6 +37,7 @@ jobs:
         terraform init
         terraform plan -out=tfplan
         terraform show -json tfplan > tfplan.json
+        cat tfplan.json
 
     - name: Setup OPA
       id: setup-opa
@@ -54,3 +55,4 @@ jobs:
       id: check-policy-violations
       run: |
         if [ "${{ steps.run-opa-query.outputs.OPA_OUTPUT }}" != "true" ]; then exit 1; fi
+        
