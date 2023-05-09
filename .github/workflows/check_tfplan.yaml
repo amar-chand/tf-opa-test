@@ -18,6 +18,7 @@ jobs:
         version: 1.4.6
     - name: Run Terraform Plan
       run: |
+        cd tf_code
         terraform init
         terraform plan -out=tfplan
         terraform show -json tfplan > tfplan.json
