@@ -2,7 +2,7 @@ package main
 
 import future.keywords.in
 
-default allow = false
+# default allow = false
 
 actions_to_check := {"create", "update"}
 
