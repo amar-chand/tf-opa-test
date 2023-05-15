@@ -54,7 +54,7 @@ jobs:
     - name: List Planned Resource Changes
       id: list-planned-resource-changes
       run: |
-        opa eval data.main.planned_resource_changes -f pretty -i tf_code/tfplan.json -d .github/opa/example_policy.rego    
+        ./opa eval data.main.planned_resource_changes -f pretty -i tf_code/tfplan.json -d .github/opa/example_policy.rego    
 
     - name: List AWS instances
       id: list-aws-instances
