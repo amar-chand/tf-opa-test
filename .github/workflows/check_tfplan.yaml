@@ -45,6 +45,11 @@ jobs:
       with:
         version: 0.42
 
+    - name: List AWS instances
+      id: list-aws-instances
+      run: |
+        opa eval data.main.aws_instance_resources -f pretty -i tf_code/tfplan.json -d .github/opa/example_policy.rego
+
     - name: Run OPA query no output
       id: run-opa-query-no-output
       run: |
