@@ -43,7 +43,7 @@ jobs:
       id: setup-opa
       uses: open-policy-agent/setup-opa@v2
       with:
-        version: 0.42
+        version: latest
 
     - name: List AWS instances
       id: list-aws-instances
