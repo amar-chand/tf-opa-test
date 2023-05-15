@@ -45,14 +45,17 @@ jobs:
       with:
         version: 0.42
 
+    - name: Run OPA query no output
+      id: run-opa-query-no-output
+      run: |
+        opa eval data.main.allow -f pretty -i tf_code/tfplan.json -d .github/opa/example_policy.rego
+
     - name: Run OPA query
       id: run-opa-query
       run: |
         echo "OPA_OUTPUT=$(opa eval data.main.allow -f pretty -i tf_code/tfplan.json -d .github/opa/example_policy.rego)" >> $GITHUB_OUTPUT
 
-
     - name: Check policy violations
       id: check-policy-violations
       run: |
         if [ "${{ steps.run-opa-query.outputs.OPA_OUTPUT }}" != "true" ]; then exit 1; fi
-        
